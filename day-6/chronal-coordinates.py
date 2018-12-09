@@ -1,12 +1,6 @@
 from collections import defaultdict
 
 def largest_area(file_name):
-    # f =["1, 1",
-    #     "1, 6",
-    #     "8, 3",
-    #     "3, 4",
-    #     "5, 5",
-    #     "8, 9"]
     f = [x for x in open(file_name)]
 
     cords = defaultdict()
@@ -18,11 +12,17 @@ def largest_area(file_name):
     grid = [[0 for x in range(maxX)] for y in range(maxX)]
 
     counts = defaultdict(lambda : 0)
+    safe_count = 0
     for y in range(0, maxX):
         for x in range(0, maxX):
             dists = defaultdict(list)
+            totalDist = 0
             for id, c in cords.items():
-                dists[abs(c[0] - x) + abs(c[1] - y)].append(id)
+                d = abs(c[0] - x) + abs(c[1] - y)
+                totalDist += d
+                dists[d].append(id)
+            if(totalDist < 10000):
+                safe_count += 1
             (hf, hg) = sorted( [(a,b) for (a,b) in dists.items()], key= lambda (a,b) : a )[0]
             if len(hg) == 1:
                 grid[y][x] =  str(hg[0])
@@ -37,6 +37,6 @@ def largest_area(file_name):
         edges.add(grid[maxX-1][a])
     edges.discard('.')
     for e in edges: counts.pop(e)
-    return sorted([(x,y) for (x,y) in counts.items()], key = lambda (a, b) : b, reverse = True)[0][1]
-    
+    return (sorted([(x,y) for (x,y) in counts.items()], key = lambda (a, b) : b, reverse = True)[0][1], safe_count)
+
 print(largest_area("input.txt"))
